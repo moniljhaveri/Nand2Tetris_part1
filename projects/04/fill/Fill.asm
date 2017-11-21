@@ -14,33 +14,50 @@
 	D=M
 	@BLANK 
 	D;JEQ
+	@0 
+	D=A
 	@i 
-	M=0 
-	M=8192
-	D=M 
+	M=D
+	@8192
+	D=A 
+	@LIM_ONE
+	M=D
 (LOOP_ONE) 
+	@LIM_ONE
+	D=M
 	@i 
 	D=D-M
 	@START
 	D;JGT
-	@i
+	@i 
+	D=A
+	@SCREEN
+	A=A+D 
+	M=-1
 	M=M+1
 	@LOOP_ONE
 	0;JMP
 (BLANK)
-	
+	@0 
+	D=A
 	@i 
-	M=0 
-	@lim_two
-	M=8192
-	D=M 
+	M=D
+	@8192
+	D=A 
+	@LIM_TWO
+	M=D
 (LOOP_TWO) 
+	@LIM_TWO
+	D=M
 	@i 
 	D=D-M
 	@START
 	D;JGT
 	@i
+	D=A
+	@SCREEN
+	A=A+D 
+	M=0
 	M=M+1
 	@LOOP_TWO
 	0;JMP
-
