@@ -28,12 +28,13 @@
 	@i 
 	D=D-M
 	@START
-	D;JGT
+	D;JLE
 	@i 
-	D=A
+	D=M
 	@SCREEN
 	A=A+D 
 	M=-1
+	@i
 	M=M+1
 	@LOOP_ONE
 	0;JMP
@@ -52,12 +53,13 @@
 	@i 
 	D=D-M
 	@START
-	D;JGT
+	D;JLE
 	@i
-	D=A
+	D=M
 	@SCREEN
 	A=A+D 
 	M=0
+	@i
 	M=M+1
 	@LOOP_TWO
 	0;JMP
