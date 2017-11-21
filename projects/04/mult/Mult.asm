@@ -8,27 +8,54 @@
 
 // Put your code here.
 	@i 
-	M=0 
-	@MULT
+	M=1 
+	@MULT 
 	M=0 
 	@0 
-	D=M 
-	@R_ZERO
-	M=D 
+	D=M
+	@RZERO 
+	M=D
 	@1 
 	D=M 
-	@R_ONE
-	M=D
-(LOOP)
-	@R_ZERO
+	@RONE 
+	M=D 
+	@2 
+	M=0
+	@RZERO 
 	D=M
+	@END
+	D;JEQ
+	@RONE 
+	D=M
+	@END
+	D;JEQ
+(LOOP)
+	@i 
+	D=M 
+	@RONE
+	D=D-M 
+	@SAVE
+	D;JGT 
+	@RZERO
+	D=M 
+	@MULT
+	M=D+M 
+	@i 
+	D=M 
 	@i 
 	D=M
-	@R_ONE
-	D=D-M
+	M=M+1
 	@LOOP
-	D;JGT
-		
-(END)
-	@END
 	0;JMP
+(SAVE) 
+	@MULT
+	D=M
+	@2
+	M=D 
+	@END 
+	0;JMP 
+(END) 
+	@END 
+	0;JMP
+	
+	 
