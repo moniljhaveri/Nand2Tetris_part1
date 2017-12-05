@@ -61,17 +61,20 @@ class Assembler:
         }
 
         self.file_path = file_path
+        self.hack_code = []
         self.commands = [] 
         self.commands = self.open_file()
         self.symbol_table = {}
         self.parser()
-    
+        self.save_hack_code()
+
     def open_file(self): 
         # opens the file and reads in the lines 
         with open(self.file_path, "r") as file: 
             for line in file: 
                 self.commands = self.clean_file(line, self.commands)
         return self.commands
+
     def clean_file(self, line, first_pass): 
         # cleans the incoming lines 
         if (line == "\n"): 
@@ -83,6 +86,7 @@ class Assembler:
         else: 
             first_pass.append(line.splitlines()[0]) 
         return first_pass
+
     def command_type(self, line): 
         # returns the command type 
         if(line[0] == '('): 
@@ -98,11 +102,14 @@ class Assembler:
             command_type = self.command_type(i)
             if command_type == Command.A_COMMAND:
                 symbol = self.symbol_parser(i)
-                print(symbol)
-                self.decimal_to_binary(symbol)
+                a_binary = self.a_parser(symbol)
+                self.add_hack_code(a_binary)
             elif command_type == Command.C_COMMAND: 
-                self.jump_parser(i)
-                self.comp_parser(i)
+                jump = self.jump_parser(i)
+                comp = self.comp_parser(i)
+                dest = self.dest_parser(i)
+                c_binary = "111" + comp + dest + jump
+                self.add_hack_code(c_binary)
             else: 
                 symbol = self.symbol_parser(i)
     
@@ -120,23 +127,25 @@ class Assembler:
             return self.Dest[split_line[0]]
 
     def jump_parser(self, line): 
-        # parsers line for the jump
+        # parses line for the jump
         if ";" not in line: 
             return self.Jump["Null"]
         else: 
-            split_line = line.split("=")
-            return self.Jump[split_line[0]]
+            split_line = line.split(";")
+            return self.Jump[split_line[1]]
 
     def comp_parser(self, line): 
-        # parsers line for the comp
+        # parses line for the comp
         split_line = line.split("=")
         comp=split_line[1]
         return self.Comp[comp]
 
     def a_parser(self, line): 
-        pass
-    
+        # parses line for the a_instructions 
+        return self.decimal_to_binary(line)
+
     def decimal_to_binary(self, line): 
+        # converts decimal to binary 
         num = int(line)
         ind = []
         while(num):  
@@ -144,13 +153,24 @@ class Assembler:
             ind.append(remainder)
             num = num>>1 
         len_ind = len(ind)
-        while(15 - len_ind): 
+        while(16 - len_ind): 
             ind.append("0")
             len_ind = len(ind)
         ind.reverse()
         con_string = "".join((str(i) for i in ind)) 
-        print(con_string)
         return con_string
+
+    def add_hack_code(self, code): 
+        # adds converted code to hack code 
+        self.hack_code.append(code)
+    
+    def save_hack_code(self): 
+        # saves the hack code 
+        file_name = self.file_path.split(".")[0] + ".hack"
+        with open(file_name, "w+") as file:
+            for i in self.hack_code: 
+                file.write(i + "\n")
+
 
 def main(): 
     num_args = len(sys.argv)
