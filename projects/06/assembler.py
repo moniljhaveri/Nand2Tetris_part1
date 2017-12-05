@@ -31,6 +31,34 @@ class Assembler:
          "JMP" : "111"
         }
 
+        self.Comp = {
+         "0" : "0101010",
+         "1" : "0111111",
+         "-1": "0111010",
+         "D" : "0001100",
+         "A" : "0110000",
+         "!D": "0001101",
+         "-D": "0001111",
+         "-A": "0110011",
+         "D+1": "0011111",
+         "A+1": "0110111", 
+         "A-1": "0110010", 
+         "D+A": "0000010",
+         "D-A": "0010011", 
+         "A-D": "0000111", 
+         "D&A": "0000000", 
+         "D|A": "0010101", 
+         "M" : "1110000",
+         "!M": "1110001", 
+         "-M": "1110011", 
+         "M+1": "1110111",
+         "M-1": "1110010",
+         "D+M": "1000010",
+         "D-M": "1010011",
+         "M-D": "1000111",
+         "D&M": "1000000",
+         "D|M": "1010101"
+        }
         self.file_path = file_path
         self.commands = [] 
         self.commands = self.open_file()
@@ -71,6 +99,7 @@ class Assembler:
                 symbol = self.symbol_parser(i)
             elif command_type == Command.C_COMMAND: 
                 self.jump_parser(i)
+                self.comp_parser(i)
             else: 
                 symbol = self.symbol_parser(i)
     
@@ -88,14 +117,19 @@ class Assembler:
             return self.Dest[split_line[0]]
 
     def jump_parser(self, line): 
-        # parsers line for the dest
+        # parsers line for the jump
         if ";" not in line: 
-            print(self.Jump["Null"])
             return self.Jump["Null"]
         else: 
             split_line = line.split("=")
-            print(self.Jump[split_line[0]])
             return self.Jump[split_line[0]]
+
+    def comp_parser(self, line): 
+        # parsers line for the comp
+        split_line = line.split("=")
+        comp=split_line[1]
+        print(self.Comp[comp])
+        return self.Comp[comp]
 
             
 
