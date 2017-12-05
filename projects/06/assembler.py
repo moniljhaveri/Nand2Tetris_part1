@@ -59,6 +59,7 @@ class Assembler:
          "D&M": "1000000",
          "D|M": "1010101"
         }
+
         self.file_path = file_path
         self.commands = [] 
         self.commands = self.open_file()
@@ -97,6 +98,8 @@ class Assembler:
             command_type = self.command_type(i)
             if command_type == Command.A_COMMAND:
                 symbol = self.symbol_parser(i)
+                print(symbol)
+                self.decimal_to_binary(symbol)
             elif command_type == Command.C_COMMAND: 
                 self.jump_parser(i)
                 self.comp_parser(i)
@@ -128,10 +131,26 @@ class Assembler:
         # parsers line for the comp
         split_line = line.split("=")
         comp=split_line[1]
-        print(self.Comp[comp])
         return self.Comp[comp]
 
-            
+    def a_parser(self, line): 
+        pass
+    
+    def decimal_to_binary(self, line): 
+        num = int(line)
+        ind = []
+        while(num):  
+            remainder = num%2
+            ind.append(remainder)
+            num = num>>1 
+        len_ind = len(ind)
+        while(15 - len_ind): 
+            ind.append("0")
+            len_ind = len(ind)
+        ind.reverse()
+        con_string = "".join((str(i) for i in ind)) 
+        print(con_string)
+        return con_string
 
 def main(): 
     num_args = len(sys.argv)
