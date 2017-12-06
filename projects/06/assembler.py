@@ -77,6 +77,7 @@ class Assembler:
 
     def clean_file(self, line, first_pass): 
         # cleans the incoming lines 
+        line = line.replace(" ", "")
         if (line == "\n"): 
             pass
         elif "//" in line: 
@@ -137,6 +138,7 @@ class Assembler:
     def comp_parser(self, line): 
         # parses line for the comp
         split_line = line.split("=")
+        print(split_line)
         comp=split_line[1]
         return self.Comp[comp]
 
