@@ -63,7 +63,7 @@ class Assembler:
         self.file_path = file_path
         self.hack_code = []
         self.commands = [] 
-        self.commands = self.open_file()
+        self.num_lines = 0 
         self.variable_counter = 16
         self.symbol_table = {
          "SP": "0",
@@ -90,6 +90,7 @@ class Assembler:
          "SCREEN": "16384",
          "KBD": "24576"
         }
+        self.commands = self.open_file()
         self.parser()
         self.save_hack_code()
 
@@ -105,12 +106,16 @@ class Assembler:
         line = line.replace(" ", "")
         if (line == "\n"): 
             pass
+        elif "(" in line: 
+           self.symbol_parser(line, self.num_lines)
         elif "//" in line: 
             comm_split = line.split("//") 
             if len(comm_split[0]) != 0: 
                 first_pass.append(comm_split[0])
+                self.num_lines += 1 
         else: 
             first_pass.append(line.splitlines()[0]) 
+            self.num_lines += 1 
         return first_pass
 
     def command_type(self, line): 
@@ -125,6 +130,7 @@ class Assembler:
     def parser(self): 
         # parses the commands 
         line_num = 0 
+        count = 0 
         for i in self.commands: 
             command_type = self.command_type(i)
             if command_type == Command.A_COMMAND:
@@ -132,10 +138,12 @@ class Assembler:
                 a_binary = ''
                 if not self.check_integer(symbol):  
                     if symbol in self.symbol_table:
-                        a_binary = self.symbol_table[symbol]
+                        stored_value = self.symbol_table[symbol]
+                        a_binary = self.a_instructions(stored_value)
                     else: 
                        self.add_to_symbol_table(symbol)
-                       a_binary = self.symbol_table[symbol]
+                       stored_value= self.symbol_table[symbol]
+                       a_binary = self.a_instructions(stored_value)
                 else: 
                     a_binary = self.a_parser(symbol)
                 self.add_hack_code(a_binary)
@@ -167,6 +175,7 @@ class Assembler:
     
     def add_to_symbol_table(self, line): 
         self.symbol_table[line] = str(self.variable_counter) 
+        self.variable_counter += 1
 
     def A_parser(self, line): 
         # parsers line for the A command 
@@ -175,8 +184,9 @@ class Assembler:
 
     def symbol_parser(self, line, line_number): 
         # parsers line for the symbol 
-        new_line = line.strip("()")
-        self.symbol_table[new_line] = new_line
+        new_line = line.strip("()\n")
+        self.symbol_table[new_line] = str(line_number)
+        print(self.symbol_table)
 
     def dest_parser(self, line): 
         # parsers line for the dest
@@ -203,7 +213,7 @@ class Assembler:
         comp=split_line[1]
         return self.Comp[comp]
 
-    def a_parser(self, line): 
+    def a_instructions(self, line): 
         # parses line for the a_instructions 
         return self.decimal_to_binary(line)
 
