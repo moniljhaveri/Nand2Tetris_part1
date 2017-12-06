@@ -91,6 +91,7 @@ class Assembler:
          "KBD": "24576"
         }
         self.commands = self.open_file()
+        self.commands = self.label_resolver()
         self.parser()
         self.save_hack_code()
 
@@ -106,8 +107,6 @@ class Assembler:
         line = line.replace(" ", "")
         if (line == "\n"): 
             pass
-        elif "(" in line: 
-           self.symbol_parser(line, self.num_lines)
         elif "//" in line: 
             comm_split = line.split("//") 
             if len(comm_split[0]) != 0: 
@@ -186,7 +185,19 @@ class Assembler:
         # parsers line for the symbol 
         new_line = line.strip("()\n")
         self.symbol_table[new_line] = str(line_number)
-        print(self.symbol_table)
+
+    def label_resolver(self): 
+        command = []
+        num_lines = 0 
+        for i in self.commands: 
+            command_type = self.command_type(i)
+            if command_type == Command.L_COMMAND: 
+                new_line = i.strip("()\n")
+                self.symbol_table[new_line] = str(num_lines)
+            else: 
+                num_lines += 1 
+                command.append(i)
+        return command
 
     def dest_parser(self, line): 
         # parsers line for the dest
