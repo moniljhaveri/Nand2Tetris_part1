@@ -64,7 +64,32 @@ class Assembler:
         self.hack_code = []
         self.commands = [] 
         self.commands = self.open_file()
-        self.symbol_table = {}
+        self.variable_counter = 16
+        self.symbol_table = {
+         "SP": "0",
+         "LCL": "1", 
+         "ARG": "2", 
+         "THIS": "3", 
+         "THAT": "4", 
+         "R0": "0",
+         "R1": "1",
+         "R2": "2",
+         "R3": "3",
+         "R4": "4",
+         "R5": "5",
+         "R6": "6",
+         "R7": "7",
+         "R8": "8",
+         "R9": "9",
+         "R10": "10",
+         "R11": "11",
+         "R12": "12",
+         "R13": "13",
+         "R14": "14",
+         "R15": "15",
+         "SCREEN": "16384",
+         "KBD": "24576"
+        }
         self.parser()
         self.save_hack_code()
 
@@ -82,7 +107,7 @@ class Assembler:
             pass
         elif "//" in line: 
             comm_split = line.split("//") 
-            if len(comm_split[0]) != 0 : 
+            if len(comm_split[0]) != 0: 
                 first_pass.append(comm_split[0])
         else: 
             first_pass.append(line.splitlines()[0]) 
@@ -99,25 +124,59 @@ class Assembler:
 
     def parser(self): 
         # parses the commands 
+        line_num = 0 
         for i in self.commands: 
             command_type = self.command_type(i)
             if command_type == Command.A_COMMAND:
-                symbol = self.symbol_parser(i)
-                a_binary = self.a_parser(symbol)
+                symbol = self.A_parser(i)
+                a_binary = ''
+                if not self.check_integer(symbol):  
+                    if symbol in self.symbol_table:
+                        a_binary = self.symbol_table[symbol]
+                    else: 
+                       self.add_to_symbol_table(symbol)
+                       a_binary = self.symbol_table[symbol]
+                else: 
+                    a_binary = self.a_parser(symbol)
                 self.add_hack_code(a_binary)
+                line_num += 1
             elif command_type == Command.C_COMMAND: 
-                jump = self.jump_parser(i)
-                comp = self.comp_parser(i)
+                jump = ""
+                comp = ""
+                dest = ""
+                if ";" in i:  
+                    comp, jump = self.jump_parser(i)
+                    dest = self.dest_parser(i)
+                else: 
+                    jump = self.jump_parser(i)
+                    comp = self.comp_parser(i)
                 dest = self.dest_parser(i)
                 c_binary = "111" + comp + dest + jump
                 self.add_hack_code(c_binary)
+                line_num += 1
             else: 
-                symbol = self.symbol_parser(i)
+                symbol = self.symbol_parser(i, line_num)
+
+    def check_integer(self, line): 
+        # check to see if integ
+        try: 
+            int(line)
+            return True
+        except ValueError: 
+            return False 
     
-    def symbol_parser(self, line): 
-        # parsers line for the symbol 
-        new_line = line.strip("()@")
+    def add_to_symbol_table(self, line): 
+        self.symbol_table[line] = str(self.variable_counter) 
+
+    def A_parser(self, line): 
+        # parsers line for the A command 
+        new_line = line.strip("@")
         return new_line
+
+    def symbol_parser(self, line, line_number): 
+        # parsers line for the symbol 
+        new_line = line.strip("()")
+        self.symbol_table[new_line] = new_line
 
     def dest_parser(self, line): 
         # parsers line for the dest
@@ -133,12 +192,14 @@ class Assembler:
             return self.Jump["Null"]
         else: 
             split_line = line.split(";")
-            return self.Jump[split_line[1]]
+            comp = self.comp_parser(split_line[0])
+            return comp, self.Jump[split_line[1]]
 
     def comp_parser(self, line): 
         # parses line for the comp
+        if "=" not in line:  
+            return self.Comp[line]
         split_line = line.split("=")
-        print(split_line)
         comp=split_line[1]
         return self.Comp[comp]
 
