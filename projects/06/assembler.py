@@ -42,6 +42,7 @@ class Assembler:
          "-A": "0110011",
          "D+1": "0011111",
          "A+1": "0110111", 
+         "D-1": "0001110", 
          "A-1": "0110010", 
          "D+A": "0000010",
          "D-A": "0010011", 
@@ -144,7 +145,7 @@ class Assembler:
                        stored_value= self.symbol_table[symbol]
                        a_binary = self.a_instructions(stored_value)
                 else: 
-                    a_binary = self.a_parser(symbol)
+                    a_binary = self.a_instructions(symbol)
                 self.add_hack_code(a_binary)
                 line_num += 1
             elif command_type == Command.C_COMMAND: 
