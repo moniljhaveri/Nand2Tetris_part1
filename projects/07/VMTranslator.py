@@ -33,3 +33,7 @@ vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
 
 def test_answer():
     assert vm_obj.num_instr() == 3
+    vm_obj.ind += 5
+    assert vm_obj.hasMoreCommands() == False
+    vm_obj.ind = 0
+    assert vm_obj.hasMoreCommands() == True
