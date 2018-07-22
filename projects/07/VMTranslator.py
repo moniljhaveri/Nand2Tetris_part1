@@ -4,7 +4,8 @@ class VMParse:
         self.inst_st = []
         self.n = 0
         self.parse()
-        self.ind = 0
+        self.ind = -1
+        self.current_command = ""
 
     def parse(self):
         with open(self.file_path) as file:
@@ -22,6 +23,11 @@ class VMParse:
         if self.ind < self.n:
             return True
         return False
+
+    def advance(self):
+        if self.hasMoreCommands():
+            self.ind += 1
+            self.current_command = self.inst_st[self.ind]
 
     def num_instr(self):
         return self.n
