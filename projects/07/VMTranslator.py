@@ -10,7 +10,6 @@ class VMParse:
     def parse(self):
         with open(self.file_path) as file:
             #            read_data = file.read()
-            self.ind = 0
             self.inst_st = []
             for line in file:
                 line_split = line.split("//")
@@ -43,3 +42,10 @@ def test_answer():
     assert vm_obj.hasMoreCommands() == False
     vm_obj.ind = 0
     assert vm_obj.hasMoreCommands() == True
+    vm_obj.ind = -1
+    assert vm_obj.ind == -1
+    vm_obj.advance()
+    assert vm_obj.ind == 0
+
+
+test_answer()
