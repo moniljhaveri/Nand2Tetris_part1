@@ -6,6 +6,10 @@ class VMParse:
         self.parse()
         self.ind = -1
         self.current_command = ""
+        self.commandDict = {}
+        # have to figure out logical commands but havent don it yet
+        self.keyWordDict = {'push': 'C_PUSH', 'pop': 'C_POP', 'label': 'C_LABEL', 'goto': 'C_GOTO', 'if-goto': 'C_IF',
+                            'function': 'C_FUNCTION', 'call': 'C_CALL', 'return': 'C_RETURN', 'add': 'C_ARTHIMETIC', 'sub': 'C_ARTHIMETIC', 'eq': 'C_ARTHIMETIC'}
 
     def parse(self):
         with open(self.file_path) as file:
@@ -30,6 +34,9 @@ class VMParse:
 
     def num_instr(self):
         return self.n
+
+    def commandType(self):
+        pass
 
 
 print("hello world")
