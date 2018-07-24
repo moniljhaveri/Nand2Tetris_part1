@@ -6,10 +6,11 @@ class VMParse:
         self.parse()
         self.ind = -1
         self.current_command = ""
-        self.commandDict = {}
+        self.command_ind = []
         # have to figure out logical commands but havent don it yet
         self.keyWordDict = {'push': 'C_PUSH', 'pop': 'C_POP', 'label': 'C_LABEL', 'goto': 'C_GOTO', 'if-goto': 'C_IF',
                             'function': 'C_FUNCTION', 'call': 'C_CALL', 'return': 'C_RETURN', 'add': 'C_ARTHIMETIC', 'sub': 'C_ARTHIMETIC', 'eq': 'C_ARTHIMETIC'}
+        self.command_type()
 
     def parse(self):
         with open(self.file_path) as file:
@@ -35,8 +36,18 @@ class VMParse:
     def num_instr(self):
         return self.n
 
+    def parse_instr(self, command):
+        split_str = command.split()
+        return self.keyWordDict[split_str[0]]
+
+    def command_type(self):
+        for i in self.inst_st:
+            key_val_pair = {self.parse_instr(i): i}
+            self.command_ind.append(key_val_pair)
+
     def commandType(self):
-        pass
+        obj = list(self.command_ind[self.ind].keys())[0]
+        return obj
 
 
 print("hello world")
@@ -53,6 +64,12 @@ def test_answer():
     assert vm_obj.ind == -1
     vm_obj.advance()
     assert vm_obj.ind == 0
+    vm_obj.ind = 0
+    assert vm_obj.commandType() == 'C_PUSH'
+    vm_obj.ind = 1
+    assert vm_obj.commandType() == 'C_PUSH'
+    vm_obj.ind = 2
+    assert vm_obj.commandType() == 'C_ARTHIMETIC'
 
 
 test_answer()
