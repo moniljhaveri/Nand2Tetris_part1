@@ -42,12 +42,22 @@ class VMParse:
 
     def command_type(self):
         for i in self.inst_st:
-            key_val_pair = {self.parse_instr(i): i}
+            key_val_pair = {self.parse_instr(i): list(i.split())}
             self.command_ind.append(key_val_pair)
 
     def commandType(self):
         obj = list(self.command_ind[self.ind].keys())[0]
         return obj
+
+    def arg1(self):
+        obj = list(self.command_ind[self.ind].values())[0][0]
+        return obj
+
+    def arg2(self):
+        command_t = self.commandType()
+        if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL']:
+            return int(list(self.command_ind[self.ind].values())[0][2])
+        return
 
 
 print("hello world")
@@ -70,6 +80,14 @@ def test_answer():
     assert vm_obj.commandType() == 'C_PUSH'
     vm_obj.ind = 2
     assert vm_obj.commandType() == 'C_ARTHIMETIC'
+    assert vm_obj.arg1() == 'add'
+    assert vm_obj.arg2() == None
+    vm_obj.ind = 1
+    assert vm_obj.arg1() == 'push'
+    assert vm_obj.arg2() == 8
+    vm_obj.ind = 0
+    assert vm_obj.arg1() == 'push'
+    assert vm_obj.arg2() == 7
 
 
 test_answer()
