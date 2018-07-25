@@ -60,11 +60,23 @@ class VMParse:
         return
 
 
+class CodeWriter:
+    def __init__(self, file_name):
+        self.file_name = file_name
+        self.file_object = open(file_name, "w")
+
+    def setFileName(self, file_name):
+        self.file_name = file_name
+        self.file_object.close()
+        self.file_object = open(file_name, "w")
+
+
 print("hello world")
 vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
 
 
 def test_answer():
+    code_writer = CodeWriter('SimpleAdd.asm')
     assert vm_obj.num_instr() == 3
     vm_obj.ind += 5
     assert vm_obj.hasMoreCommands() == False
@@ -88,6 +100,6 @@ def test_answer():
     vm_obj.ind = 0
     assert vm_obj.arg1() == 'push'
     assert vm_obj.arg2() == 7
-
-
-test_answer()
+    assert code_writer.file_object.name == 'SimpleAdd.asm'
+    code_writer.setFileName('testASM.asm')
+    assert code_writer.file_object.name == 'testASM.asm'
