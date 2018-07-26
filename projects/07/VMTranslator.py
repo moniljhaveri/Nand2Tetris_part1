@@ -64,11 +64,25 @@ class CodeWriter:
     def __init__(self, file_name):
         self.file_name = file_name
         self.file_object = open(file_name, "w")
+        self.st_ptr = 256
+        self.setStack()
 
     def setFileName(self, file_name):
         self.file_name = file_name
         self.file_object.close()
         self.file_object = open(file_name, "w")
+
+    def writeArithmetic(self):
+        pass
+
+    def WritePushPop(self, command, data):
+        pass
+
+    def setStack(self):
+        self.file_object.writelines("@256\n")
+        self.file_object.writelines("D=A\n")
+        self.file_object.writelines("@0\n")
+        self.file_object.writelines("M=D\n")
 
 
 print("hello world")
