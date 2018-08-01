@@ -11,6 +11,7 @@ class VMParse:
         self.keyWordDict = {'push': 'C_PUSH', 'pop': 'C_POP', 'label': 'C_LABEL', 'goto': 'C_GOTO', 'if-goto': 'C_IF',
                             'function': 'C_FUNCTION', 'call': 'C_CALL', 'return': 'C_RETURN', 'add': 'C_ARTHIMETIC', 'sub': 'C_ARTHIMETIC', 'eq': 'C_ARTHIMETIC'}
         self.command_type()
+        self.st_ptr = 256
 
     def parse(self):
         with open(self.file_path) as file:
@@ -76,13 +77,35 @@ class CodeWriter:
         pass
 
     def WritePushPop(self, command, data):
-        pass
+        asm_data = []
+        if command == 'C_PUSH':
+
+            self.st_ptr += 1
 
     def setStack(self):
-        self.file_object.writelines("@256\n")
-        self.file_object.writelines("D=A\n")
-        self.file_object.writelines("@0\n")
-        self.file_object.writelines("M=D\n")
+        init_list = ["@256", "D=A", "@0", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in init_list)
+
+    def incStack(self):
+        self.st_ptr += 1
+        inc_list = ["@" + str(self.st_ptr), "D=A", "@0", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in inc_list)
+
+    def decStack(self):
+        self.st_ptr -= 1
+        dec_list = ["@" + str(self.st_ptr), "D=A", "@0", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in dec_list)
+
+    def accessStackLocation(self):
+        st_list = ["@0", "A=M", "D=M"]
+        self.file_object.writelines("%s\n" % l for l in st_list)
+
+    def writeStackLocation(self, value):
+        st_list = ["@" + str(value), "D=M", "@0", "A=M", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in st_list)
+
+    def return_pointer(self):
+        return ["@pointer", "A=M", "D=M"]
 
 
 print("hello world")
