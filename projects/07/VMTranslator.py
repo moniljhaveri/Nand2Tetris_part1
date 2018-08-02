@@ -78,7 +78,7 @@ class CodeWriter:
 
     def WritePushPop(self, command, data):
         if command == 'C_PUSH':
-            push_list = ["@" + str(data), "@0", "A=M", "M=D"]
+            push_list = ["@" + str(data), "D=A", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in push_list)
             self.st_ptr += 1
             self.incStack()
