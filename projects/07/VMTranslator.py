@@ -77,10 +77,12 @@ class CodeWriter:
         pass
 
     def WritePushPop(self, command, data):
-        asm_data = []
         if command == 'C_PUSH':
-
+            push_list = ["@" + str(data), "@0", "A=M", "M=D"]
+            self.file_object.writelines("%s\n" % l for l in push_list)
             self.st_ptr += 1
+            self.incStack()
+            return 1
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D"]
@@ -88,21 +90,13 @@ class CodeWriter:
 
     def incStack(self):
         self.st_ptr += 1
-        inc_list = ["@" + str(self.st_ptr), "D=A", "@0", "M=D"]
+        inc_list = ["@0", "M=M+1"]
         self.file_object.writelines("%s\n" % l for l in inc_list)
 
     def decStack(self):
         self.st_ptr -= 1
-        dec_list = ["@" + str(self.st_ptr), "D=A", "@0", "M=D"]
+        dec_list = ["@0", "M=M-1"]
         self.file_object.writelines("%s\n" % l for l in dec_list)
-
-    def accessStackLocation(self):
-        st_list = ["@0", "A=M", "D=M"]
-        self.file_object.writelines("%s\n" % l for l in st_list)
-
-    def writeStackLocation(self, value):
-        st_list = ["@" + str(value), "D=M", "@0", "A=M", "M=D"]
-        self.file_object.writelines("%s\n" % l for l in st_list)
 
     def return_pointer(self):
         return ["@pointer", "A=M", "D=M"]
@@ -138,5 +132,6 @@ def test_answer():
     assert vm_obj.arg1() == 'push'
     assert vm_obj.arg2() == 7
     assert code_writer.file_object.name == 'SimpleAdd.asm'
+    assert code_writer.WritePushPop('C_PUSH', 7) == 1
     code_writer.setFileName('testASM.asm')
     assert code_writer.file_object.name == 'testASM.asm'
