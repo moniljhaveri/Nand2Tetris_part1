@@ -25,7 +25,7 @@ class VMParse:
         self.n = len(self.inst_st)
 
     def hasMoreCommands(self):
-        if self.ind < self.n:
+        if self.ind < self.n - 1:
             return True
         return False
 
@@ -73,8 +73,11 @@ class CodeWriter:
         self.file_object.close()
         self.file_object = open(file_name, "w")
 
-    def writeArithmetic(self):
-        pass
+    def writeArithmetic(self, operator):
+        if operator == 'add':
+            self.popStack()
+            emit_list = ["A=M", "D=M+D", "@0", "M=M+1", "A=M", "M=D"]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def WritePushPop(self, command, data):
         self.emit_comment(command, data)
@@ -84,6 +87,8 @@ class CodeWriter:
             self.st_ptr += 1
             self.incStack()
             return 1
+        elif command == 'C_POP':
+            self.popStack()
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D"]
@@ -96,7 +101,7 @@ class CodeWriter:
 
     def popStack(self):
         self.st_ptr -= 1
-        dec_list = ["@0", "D=M", "M=M-1"]
+        dec_list = ["@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1"]
         self.file_object.writelines("%s\n" % l for l in dec_list)
 
     def return_pointer(self):
@@ -106,12 +111,12 @@ class CodeWriter:
         emit_str = "//" + command + " " + str(data) + "\n"
         self.file_object.writelines(emit_str)
 
-
-print("hello world")
-vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
+    def close(self):
+        self.file_object.close()
 
 
 def test_answer():
+    vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
     code_writer = CodeWriter('SimpleAdd.asm')
     assert vm_obj.num_instr() == 3
     vm_obj.ind += 5
@@ -140,3 +145,24 @@ def test_answer():
     assert code_writer.WritePushPop('C_PUSH', 7) == 1
     code_writer.setFileName('testASM.asm')
     assert code_writer.file_object.name == 'testASM.asm'
+
+
+def run():
+    vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
+    code_writer = CodeWriter('SimpleAdd.asm')
+    while(vm_obj.hasMoreCommands()):
+        vm_obj.advance()
+        command_type = vm_obj.commandType()
+        if command_type == 'C_ARTHIMETIC':
+            arg1 = vm_obj.arg1()
+            code_writer.emit_comment(arg1, -1)
+            code_writer.writeArithmetic(arg1)
+        else:
+            arg2 = vm_obj.arg2()
+            code_writer.WritePushPop(command_type, arg2)
+    code_writer.close()
+
+
+print("hello world")
+run()
+print("Run complete")
