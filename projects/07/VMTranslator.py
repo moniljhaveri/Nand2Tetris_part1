@@ -77,6 +77,7 @@ class CodeWriter:
         pass
 
     def WritePushPop(self, command, data):
+        self.emit_comment(command, data)
         if command == 'C_PUSH':
             push_list = ["@" + str(data), "D=A", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in push_list)
@@ -93,13 +94,17 @@ class CodeWriter:
         inc_list = ["@0", "M=M+1"]
         self.file_object.writelines("%s\n" % l for l in inc_list)
 
-    def decStack(self):
+    def popStack(self):
         self.st_ptr -= 1
-        dec_list = ["@0", "M=M-1"]
+        dec_list = ["@0", "D=M", "M=M-1"]
         self.file_object.writelines("%s\n" % l for l in dec_list)
 
     def return_pointer(self):
         return ["@pointer", "A=M", "D=M"]
+
+    def emit_comment(self, command, data):
+        emit_str = "//" + command + " " + str(data) + "\n"
+        self.file_object.writelines(emit_str)
 
 
 print("hello world")
