@@ -66,6 +66,7 @@ class CodeWriter:
         self.file_name = file_name
         self.file_object = open(file_name, "w")
         self.st_ptr = 256
+        self.label_num = 0
         self.setStack()
 
     def setFileName(self, file_name):
