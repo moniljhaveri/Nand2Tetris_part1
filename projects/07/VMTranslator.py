@@ -76,7 +76,7 @@ class CodeWriter:
     def writeArithmetic(self, operator):
         if operator == 'add':
             self.popStack()
-            emit_list = ["A=M", "D=M+D", "@0", "M=M+1", "A=M", "M=D"]
+            emit_list = ["A=M", "D=M+D", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def WritePushPop(self, command, data):
