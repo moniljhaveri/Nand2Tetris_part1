@@ -9,7 +9,7 @@ class VMParse:
         self.command_ind = []
         # have to figure out logical commands but havent don it yet
         self.keyWordDict = {'push': 'C_PUSH', 'pop': 'C_POP', 'label': 'C_LABEL', 'goto': 'C_GOTO', 'if-goto': 'C_IF',
-                            'function': 'C_FUNCTION', 'call': 'C_CALL', 'return': 'C_RETURN', 'add': 'C_ARTHIMETIC', 'sub': 'C_ARTHIMETIC', 'eq': 'C_ARTHIMETIC'}
+                            'function': 'C_FUNCTION', 'call': 'C_CALL', 'return': 'C_RETURN', 'add': 'C_ARTHIMETIC', 'sub': 'C_ARTHIMETIC', 'eq': 'C_ARTHIMETIC', 'lt': 'C_ARTHIMETIC', 'gt': 'C_ARTHIMETIC', 'neg': 'C_ARTHIMETIC', 'and': 'C_ARTHIMETIC', 'or': 'C_ARTHIMETIC', 'not': 'C_ARTHIMETIC'}
         self.command_type()
         self.st_ptr = 256
 
@@ -79,6 +79,35 @@ class CodeWriter:
             self.popStack()
             emit_list = ["A=M", "D=M+D", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in emit_list)
+        elif operator == 'eq':
+            label = "label" + str(self.label_num)
+            self.label_num += 1
+            label1 = "label" + str(self.label_num)
+            self.popStack()
+            emit_list = ["A=M", "D=D-M", "@" + label, "D, JEQ", "@" + label1]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.WritePushPop('C_PUSH', 0)
+            emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.WritePushPop('C_PUSH', 0)
+            emit_list = ["(" + label1 + ")", ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+        elif operator == 'lt':
+            pass
+        elif operator == 'neg':
+            pass
+        elif operator == 'sub':
+            pass
+        elif operator == 'gt':
+            pass
+        elif operator == 'not':
+            pass
+        elif operator == 'and':
+            pass
+        elif operator == 'or':
+            pass
+        else:
+            print(operator)
 
     def WritePushPop(self, command, data):
         self.emit_comment(command, data)
@@ -117,8 +146,8 @@ class CodeWriter:
 
 
 def test_answer():
-    vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
-    code_writer = CodeWriter('SimpleAdd.asm')
+    vm_obj = VMParse("./StackArithmetic/SimpleTest/SimpleTest.vm")
+    code_writer = CodeWriter('SimpleTest/SimpleTest.asm')
     assert vm_obj.num_instr() == 3
     vm_obj.ind += 5
     assert vm_obj.hasMoreCommands() == False
@@ -149,8 +178,8 @@ def test_answer():
 
 
 def run():
-    vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
-    code_writer = CodeWriter('SimpleAdd.asm')
+    vm_obj = VMParse("./StackArithmetic/StackTest/Stackeq.vm")
+    code_writer = CodeWriter('./StackArithmetic/StackTest/Stackeq.asm')
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
