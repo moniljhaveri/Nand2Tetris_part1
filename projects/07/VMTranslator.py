@@ -89,7 +89,7 @@ class CodeWriter:
             self.WritePushPop('C_PUSH', 0)
             emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', 0)
+            self.WritePushPop('C_PUSH', 1)
             emit_list = ["(" + label1 + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
         elif operator == 'lt':
