@@ -89,16 +89,41 @@ class CodeWriter:
             self.WritePushPop('C_PUSH', 0)
             emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', 1)
+            self.WritePushPop('C_PUSH', -1)
             emit_list = ["(" + label1 + ")", ]
+            self.label_num += 1
             self.file_object.writelines("%s\n" % l for l in emit_list)
         elif operator == 'lt':
-            pass
+            label = "label" + str(self.label_num)
+            self.label_num += 1
+            label1 = "label" + str(self.label_num)
+            self.popStack()
+            emit_list = ["A=M", "D=D-M", "@" + label, "D, JLE", "@" + label1]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.WritePushPop('C_PUSH', -1)
+            emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.WritePushPop('C_PUSH', 0)
+            emit_list = ["(" + label1 + ")", ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.label_num += 1
+        elif operator == 'gt':
+            label = "label" + str(self.label_num)
+            self.label_num += 1
+            label1 = "label" + str(self.label_num)
+            self.popStack()
+            emit_list = ["A=M", "D=D-M", "@" + label, "D, JGE", "@" + label1]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.WritePushPop('C_PUSH', -1)
+            emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.WritePushPop('C_PUSH', 0)
+            emit_list = ["(" + label1 + ")", ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.label_num += 1
         elif operator == 'neg':
             pass
         elif operator == 'sub':
-            pass
-        elif operator == 'gt':
             pass
         elif operator == 'not':
             pass
@@ -112,7 +137,12 @@ class CodeWriter:
     def WritePushPop(self, command, data):
         self.emit_comment(command, data)
         if command == 'C_PUSH':
-            push_list = ["@" + str(data), "D=A", "@0", "A=M", "M=D"]
+            push_list = [] 
+            if data > 1 or data < -1: 
+                push_list = ["@" + str(data), "D=A", "@SP", "A=M", "M=D"]
+            else:
+                push_list = ["@SP", "A=M", "M="+str(data)]
+
             self.file_object.writelines("%s\n" % l for l in push_list)
             self.st_ptr += 1
             self.incStack()
