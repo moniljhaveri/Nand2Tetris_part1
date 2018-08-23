@@ -133,7 +133,10 @@ class CodeWriter:
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.incStack()
         elif operator == 'not':
-            pass
+            emit_list = ["@0", "M=M-1", "A=M",
+                         "D=M", "D=!D", "@0", "A=M", "M=D"]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.incStack()
         elif operator == 'and':
             pass
         elif operator == 'or':
