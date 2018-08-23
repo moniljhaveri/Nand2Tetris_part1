@@ -79,10 +79,12 @@ class CodeWriter:
             self.popStack()
             emit_list = ["A=M", "D=M+D", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.incStack()
         elif operator == 'sub':
             self.popStack()
             emit_list = ["A=M", "D=M-D", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.incStack()
         elif operator == 'eq':
             label = "label" + str(self.label_num)
             self.label_num += 1
@@ -210,8 +212,8 @@ def test_answer():
 
 
 def run():
-    vm_obj = VMParse("./StackArithmetic/StackTest/StackEq.vm")
-    code_writer = CodeWriter('./StackArithmetic/StackTest/StackEq.asm')
+    vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
+    code_writer = CodeWriter('./StackArithmetic/SimpleAdd/SimpleAdd.asm')
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
