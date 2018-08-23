@@ -79,6 +79,10 @@ class CodeWriter:
             self.popStack()
             emit_list = ["A=M", "D=M+D", "@0", "A=M", "M=D"]
             self.file_object.writelines("%s\n" % l for l in emit_list)
+        elif operator == 'sub':
+            self.popStack()
+            emit_list = ["A=M", "D=M-D", "@0", "A=M", "M=D"]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
         elif operator == 'eq':
             label = "label" + str(self.label_num)
             self.label_num += 1
@@ -123,8 +127,6 @@ class CodeWriter:
             self.label_num += 1
         elif operator == 'neg':
             pass
-        elif operator == 'sub':
-            pass
         elif operator == 'not':
             pass
         elif operator == 'and':
@@ -137,11 +139,11 @@ class CodeWriter:
     def WritePushPop(self, command, data):
         self.emit_comment(command, data)
         if command == 'C_PUSH':
-            push_list = [] 
-            if data > 1 or data < -1: 
+            push_list = []
+            if data > 1 or data < -1:
                 push_list = ["@" + str(data), "D=A", "@SP", "A=M", "M=D"]
             else:
-                push_list = ["@SP", "A=M", "M="+str(data)]
+                push_list = ["@SP", "A=M", "M=" + str(data)]
 
             self.file_object.writelines("%s\n" % l for l in push_list)
             self.st_ptr += 1
