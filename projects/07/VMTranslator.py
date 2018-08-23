@@ -128,7 +128,10 @@ class CodeWriter:
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.label_num += 1
         elif operator == 'neg':
-            pass
+            emit_list = ["@0", "M=M-1", "A=M",
+                         "D=M", "D=0-D", "@0", "A=M", "M=D"]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.incStack()
         elif operator == 'not':
             pass
         elif operator == 'and':
