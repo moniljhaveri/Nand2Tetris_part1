@@ -57,6 +57,12 @@ class VMParse:
     def arg2(self):
         command_t = self.commandType()
         if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL']:
+            return list(self.command_ind[self.ind].values())[0][1]
+        return
+
+    def arg3(self):
+        command_t = self.commandType()
+        if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL']:
             return int(list(self.command_ind[self.ind].values())[0][2])
         return
 
@@ -150,7 +156,7 @@ class CodeWriter:
         else:
             print(operator)
 
-    def WritePushPop(self, command, data):
+    def WritePushPop(self, command, area, data):
         self.emit_comment(command, data)
         if command == 'C_PUSH':
             push_list = []
@@ -192,8 +198,8 @@ class CodeWriter:
 
 
 def test_answer():
-    vm_obj = VMParse("./StackArithmetic/SimpleTest/SimpleTest.vm")
-    code_writer = CodeWriter('SimpleTest/SimpleTest.asm')
+    vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
+    code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
     assert vm_obj.num_instr() == 3
     vm_obj.ind += 5
     assert vm_obj.hasMoreCommands() == False
@@ -224,8 +230,10 @@ def test_answer():
 
 
 def run():
-    vm_obj = VMParse("./StackArithmetic/SimpleAdd/SimpleAdd.vm")
-    code_writer = CodeWriter('./StackArithmetic/SimpleAdd/SimpleAdd.asm')
+    vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
+    code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
+    #vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
+    #code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
@@ -234,8 +242,11 @@ def run():
             code_writer.emit_comment(arg1, -1)
             code_writer.writeArithmetic(arg1)
         else:
+            arg3 = vm_obj.arg3()
             arg2 = vm_obj.arg2()
-            code_writer.WritePushPop(command_type, arg2)
+            arg1 = vm_obj.arg1()
+            print(command_type, arg1, arg2, arg3)
+            code_writer.WritePushPop(command_type, arg2, arg3)
     code_writer.close()
 
 
