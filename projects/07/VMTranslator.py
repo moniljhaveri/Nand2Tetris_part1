@@ -98,10 +98,10 @@ class CodeWriter:
             self.popStack()
             emit_list = ["A=M", "D=D-M", "@" + label, "D, JEQ", "@" + label1]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', 0)
+            self.WritePushPop('C_PUSH', 'constant', 0)
             emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', -1)
+            self.WritePushPop('C_PUSH', 'constant', -1)
             emit_list = ["(" + label1 + ")", ]
             self.label_num += 1
             self.file_object.writelines("%s\n" % l for l in emit_list)
@@ -112,10 +112,10 @@ class CodeWriter:
             self.popStack()
             emit_list = ["A=M", "D=D-M", "@" + label, "D, JLE", "@" + label1]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', -1)
+            self.WritePushPop('C_PUSH', 'constant', -1)
             emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', 0)
+            self.WritePushPop('C_PUSH', 'constant', 0)
             emit_list = ["(" + label1 + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.label_num += 1
@@ -126,10 +126,10 @@ class CodeWriter:
             self.popStack()
             emit_list = ["A=M", "D=D-M", "@" + label, "D, JGE", "@" + label1]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', -1)
+            self.WritePushPop('C_PUSH', 'constant', -1)
             emit_list = ["@" + label1, "0, JMP", "(" + label + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            self.WritePushPop('C_PUSH', 0)
+            self.WritePushPop('C_PUSH', 'constant', 0)
             emit_list = ["(" + label1 + ")", ]
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.label_num += 1
@@ -156,9 +156,9 @@ class CodeWriter:
         else:
             print(operator)
 
-    def WritePushPop(self, command, area, data):
+    def WritePushPop(self, command, arg, data):
         self.emit_comment(command, data)
-        if command == 'C_PUSH':
+        if (command == 'C_PUSH') and (arg == 'constant'):
             push_list = []
             if data > 1 or data < -1:
                 push_list = ["@" + str(data), "D=A", "@SP", "A=M", "M=D"]
@@ -169,6 +169,11 @@ class CodeWriter:
             self.st_ptr += 1
             self.incStack()
             return 1
+        elif(command == 'C_PUSH') and (arg == 'local'):
+            emit_list = ['@LCL', 'D=A', '@' +
+                         str(data), 'A=A+D', 'D=M', '@SP', 'M=D']
+            self.file_object.writelines("%s\n" % l for l in push_list)
+            self.incStack()
         elif command == 'C_POP':
             self.popStack()
 
@@ -224,7 +229,7 @@ def test_answer():
     assert vm_obj.arg1() == 'push'
     assert vm_obj.arg2() == 7
     assert code_writer.file_object.name == 'SimpleAdd.asm'
-    assert code_writer.WritePushPop('C_PUSH', 7) == 1
+    assert code_writer.WritePushPop('C_PUSH', 'constant', 7) == 1
     code_writer.setFileName('testASM.asm')
     assert code_writer.file_object.name == 'testASM.asm'
 
