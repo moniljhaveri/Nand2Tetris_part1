@@ -157,7 +157,7 @@ class CodeWriter:
             print(operator)
 
     def WritePushPop(self, command, arg, data):
-        self.emit_comment(command, data)
+        self.emit_comment(command, arg, data)
         if (command == 'C_PUSH') and (arg == 'constant'):
             push_list = []
             if data > 1 or data < -1:
@@ -172,14 +172,14 @@ class CodeWriter:
         elif(command == 'C_PUSH') and (arg == 'local'):
             emit_list = ['@LCL', 'D=A', '@' +
                          str(data), 'A=A+D', 'D=M', '@SP', 'M=D']
-            self.file_object.writelines("%s\n" % l for l in push_list)
+            self.file_object.writelines("%s\n" % l for l in emit_list)
             self.incStack()
         elif command == 'C_POP':
             self.popStack()
         elif(command == 'C_POP') and (arg == 'local'):
             emit_list = ['@LCL', 'D=A', '@' +
                          str(data), 'A=A+D', 'D=M', '@SP', 'M=M-1', 'A=M', 'M=D']
-            self.file_object.writelines("%s\n" % l for l in push_list)
+            self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D"]
@@ -198,8 +198,8 @@ class CodeWriter:
     def return_pointer(self):
         return ["@pointer", "A=M", "D=M"]
 
-    def emit_comment(self, command, data):
-        emit_str = "//" + command + " " + str(data) + "\n"
+    def emit_comment(self, command, arg, data):
+        emit_str = "//" + command + " " + arg + " " + str(data) + "\n"
         self.file_object.writelines(emit_str)
 
     def close(self):
@@ -239,16 +239,16 @@ def test_answer():
 
 
 def run():
-    vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
-    code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
-    #vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
-    #code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
+    #vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
+    #code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
+    vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
+    code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
         if command_type == 'C_ARTHIMETIC':
             arg1 = vm_obj.arg1()
-            code_writer.emit_comment(arg1, -1)
+            code_writer.emit_comment(arg1, str(-1), -1)
             code_writer.writeArithmetic(arg1)
         else:
             arg3 = vm_obj.arg3()
