@@ -176,6 +176,10 @@ class CodeWriter:
             self.incStack()
         elif command == 'C_POP':
             self.popStack()
+        elif(command == 'C_POP') and (arg == 'local'):
+            emit_list = ['@LCL', 'D=A', '@' +
+                         str(data), 'A=A+D', 'D=M', '@SP', 'M=M-1', 'A=M', 'M=D']
+            self.file_object.writelines("%s\n" % l for l in push_list)
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D"]
