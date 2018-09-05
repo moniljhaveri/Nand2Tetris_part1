@@ -178,7 +178,7 @@ class CodeWriter:
             self.incStack()
         elif(command == 'C_POP') and (arg != 'constant'):
             emit_list = ['@' + self.location[arg], 'D=M', '@' + str(
-                data), 'D=D+A', 'M=D', '@SP', 'M=M-1', 'A=M', 'D=M', '@' + self.location[arg], 'A=M', 'M=D', '@' + self.location[arg], 'D=M', '@' + str(data), 'D=D-A', '@' + self.location[arg], 'M=D']
+                data), 'D=D+A', '@' + self.location[arg], 'M=D', '@SP', 'M=M-1', 'A=M', 'D=M', '@' + self.location[arg], 'A=M', 'M=D', '@' + self.location[arg], 'D=M', '@' + str(data), 'D=D-A', '@' + self.location[arg], 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
         elif command == 'C_POP':
             self.popStack()
