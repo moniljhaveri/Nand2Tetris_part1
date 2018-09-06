@@ -184,7 +184,7 @@ class CodeWriter:
             self.popStack()
 
     def setStack(self):
-        init_list = ["@256", "D=A", "@0", "M=D"]
+        init_list = ["@256", "D=A", "@0", "M=D", "@5", 'D=A', '@TEMP', 'M=D']
         self.file_object.writelines("%s\n" % l for l in init_list)
 
     def incStack(self):
