@@ -173,7 +173,7 @@ class CodeWriter:
             return 1
         elif(command == 'C_PUSH') and (arg != 'constant'):
             emit_list = ['@' + self.location[arg], 'D=M', '@' +
-                         str(data), 'D=A+D', 'A=D', 'D=M', '@SP', 'A=M', 'M=D', '@SP', 'M=M+1']
+                         str(data), 'D=A+D', 'A=D', 'D=M', '@SP', 'A=M', 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.incStack()
         elif(command == 'C_POP') and (arg != 'constant'):
@@ -250,6 +250,7 @@ def run():
         command_type = vm_obj.commandType()
         if command_type == 'C_ARTHIMETIC':
             arg1 = vm_obj.arg1()
+            print(command_type, arg1)
             code_writer.emit_comment(arg1, str(-1), -1)
             code_writer.writeArithmetic(arg1)
         else:
