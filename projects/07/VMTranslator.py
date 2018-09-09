@@ -81,6 +81,11 @@ class CodeWriter:
         self.file_name = file_name
         self.file_object.close()
         self.file_object = open(file_name, "w")
+    
+    def parseFileName(self): 
+        tmp = self.file_name.split('.')
+        tmp1 = tmp[0].split('/')[-1]
+        return tmp1
 
     def writeArithmetic(self, operator):
         if operator == 'add':
@@ -180,6 +185,17 @@ class CodeWriter:
             emit_list = ['@'+tmp, 'D=M', '@SP', 'A=M', 'M=D', '@SP', 'M=M+1']
             self.file_object.writelines("%s\n" % l for l in emit_list)
             return 3
+        elif (command == 'C_PUSH') and (arg == 'static'):
+            name = '@' + self.parseFileName() + '.' + str(data)
+            emit_list = [name, 'D=M', '@SP', 'A=M', 'M=D']
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.incStack()
+            return 4 
+        elif (command == 'C_POP') and (arg == 'static'):
+            name = '@' + self.parseFileName() + '.' + str(data)
+            emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M', name, 'M=D' ]
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            return -4 
         elif (command == 'C_POP') and (arg == 'pointer'):
             tmp = '' 
             if data: 
@@ -230,8 +246,8 @@ class CodeWriter:
 
 
 def test_answer():
-    vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
-    code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
+    vm_obj = VMParse("./MemoryAccess/StaticTest/StaticTest.vm")
+    code_writer = CodeWriter('MemoryAccess/StaticTest/StaticTest.asm')
     assert vm_obj.num_instr() == 3
     vm_obj.ind += 5
     assert vm_obj.hasMoreCommands() == False
@@ -264,8 +280,10 @@ def test_answer():
 def run():
     #vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
     #code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
-    vm_obj = VMParse("./MemoryAccess/PointerTest/PointerTest.vm")
-    code_writer = CodeWriter('MemoryAccess/PointerTest/PointerTest.asm')
+    #vm_obj = VMParse("./MemoryAccess/PointerTest/PointerTest.vm")
+    #code_writer = CodeWriter('MemoryAccess/PointerTest/PointerTest.asm')
+    vm_obj = VMParse("./MemoryAccess/StaticTest/StaticTest.vm")
+    code_writer = CodeWriter('MemoryAccess/StaticTest/StaticTest.asm')
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
