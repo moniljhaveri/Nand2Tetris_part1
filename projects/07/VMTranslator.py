@@ -171,17 +171,38 @@ class CodeWriter:
             self.st_ptr += 1
             self.incStack()
             return 1
+        elif (command == 'C_PUSH') and (arg == 'pointer'):
+            tmp = '' 
+            if data: 
+                tmp = 'THAT'
+            else: 
+                tmp = 'THIS'
+            emit_list = ['@'+tmp, 'D=M', '@SP', 'A=M', 'M=D', '@SP', 'M=M+1']
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            return 3
+        elif (command == 'C_POP') and (arg == 'pointer'):
+            tmp = '' 
+            if data: 
+                tmp = 'THAT'
+            else: 
+                tmp = 'THIS'
+            emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M', '@'+tmp, 'M=D']
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            return -3 
         elif(command == 'C_PUSH') and (arg != 'constant'):
             emit_list = ['@' + self.location[arg], 'D=M', '@' +
                          str(data), 'D=A+D', 'A=D', 'D=M', '@SP', 'A=M', 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.incStack()
+            return 2 
         elif(command == 'C_POP') and (arg != 'constant'):
             emit_list = ['@' + self.location[arg], 'D=M', '@' + str(
                 data), 'D=D+A', '@' + self.location[arg], 'M=D', '@SP', 'M=M-1', 'A=M', 'D=M', '@' + self.location[arg], 'A=M', 'M=D', '@' + self.location[arg], 'D=M', '@' + str(data), 'D=D-A', '@' + self.location[arg], 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
+            return -2 
         elif command == 'C_POP':
             self.popStack()
+            return -1 
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D", "@5", 'D=A', '@TEMP', 'M=D']
@@ -243,8 +264,8 @@ def test_answer():
 def run():
     #vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
     #code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
-    vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
-    code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
+    vm_obj = VMParse("./MemoryAccess/PointerTest/PointerTest.vm")
+    code_writer = CodeWriter('MemoryAccess/PointerTest/PointerTest.asm')
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
