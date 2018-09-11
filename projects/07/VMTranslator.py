@@ -1,3 +1,7 @@
+import os
+import sys
+
+
 class VMParse:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -81,8 +85,8 @@ class CodeWriter:
         self.file_name = file_name
         self.file_object.close()
         self.file_object = open(file_name, "w")
-    
-    def parseFileName(self): 
+
+    def parseFileName(self):
         tmp = self.file_name.split('.')
         tmp1 = tmp[0].split('/')[-1]
         return tmp1
@@ -177,12 +181,12 @@ class CodeWriter:
             self.incStack()
             return 1
         elif (command == 'C_PUSH') and (arg == 'pointer'):
-            tmp = '' 
-            if data: 
+            tmp = ''
+            if data:
                 tmp = 'THAT'
-            else: 
+            else:
                 tmp = 'THIS'
-            emit_list = ['@'+tmp, 'D=M', '@SP', 'A=M', 'M=D', '@SP', 'M=M+1']
+            emit_list = ['@' + tmp, 'D=M', '@SP', 'A=M', 'M=D', '@SP', 'M=M+1']
             self.file_object.writelines("%s\n" % l for l in emit_list)
             return 3
         elif (command == 'C_PUSH') and (arg == 'static'):
@@ -190,35 +194,35 @@ class CodeWriter:
             emit_list = [name, 'D=M', '@SP', 'A=M', 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.incStack()
-            return 4 
+            return 4
         elif (command == 'C_POP') and (arg == 'static'):
             name = '@' + self.parseFileName() + '.' + str(data)
-            emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M', name, 'M=D' ]
+            emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M', name, 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            return -4 
+            return -4
         elif (command == 'C_POP') and (arg == 'pointer'):
-            tmp = '' 
-            if data: 
+            tmp = ''
+            if data:
                 tmp = 'THAT'
-            else: 
+            else:
                 tmp = 'THIS'
-            emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M', '@'+tmp, 'M=D']
+            emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M', '@' + tmp, 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            return -3 
+            return -3
         elif(command == 'C_PUSH') and (arg != 'constant'):
             emit_list = ['@' + self.location[arg], 'D=M', '@' +
                          str(data), 'D=A+D', 'A=D', 'D=M', '@SP', 'A=M', 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
             self.incStack()
-            return 2 
+            return 2
         elif(command == 'C_POP') and (arg != 'constant'):
             emit_list = ['@' + self.location[arg], 'D=M', '@' + str(
                 data), 'D=D+A', '@' + self.location[arg], 'M=D', '@SP', 'M=M-1', 'A=M', 'D=M', '@' + self.location[arg], 'A=M', 'M=D', '@' + self.location[arg], 'D=M', '@' + str(data), 'D=D-A', '@' + self.location[arg], 'M=D']
             self.file_object.writelines("%s\n" % l for l in emit_list)
-            return -2 
+            return -2
         elif command == 'C_POP':
             self.popStack()
-            return -1 
+            return -1
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D", "@5", 'D=A', '@TEMP', 'M=D']
@@ -277,13 +281,14 @@ def test_answer():
     assert code_writer.file_object.name == 'testASM.asm'
 
 
-def run():
-    #vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
-    #code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
-    #vm_obj = VMParse("./MemoryAccess/PointerTest/PointerTest.vm")
-    #code_writer = CodeWriter('MemoryAccess/PointerTest/PointerTest.asm')
-    vm_obj = VMParse("./MemoryAccess/StaticTest/StaticTest.vm")
-    code_writer = CodeWriter('MemoryAccess/StaticTest/StaticTest.asm')
+def run(fileName):
+    # vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
+    # code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
+    # vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
+    # code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
+    fileAsm = fileName.split('.')[0] + '.asm'
+    vm_obj = VMParse(fileName)
+    code_writer = CodeWriter(fileAsm)
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
@@ -301,6 +306,13 @@ def run():
     code_writer.close()
 
 
-print("hello world")
-run()
+file = sys.argv[1]
+print(file)
+if os.path.isdir(file):
+    vm_files = [file + i for i in os.listdir(file) if '.vm' in i]
+    print(vm_files)
+    for i in vm_files:
+        run(i)
+else:
+    run(file)
 print("Run complete")
