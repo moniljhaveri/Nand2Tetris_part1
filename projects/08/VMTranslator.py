@@ -241,6 +241,10 @@ class CodeWriter:
         elif command == 'C_POP':
             self.popStack()
             return -1
+        elif command == 'C_LABEL':
+            emit_list = ['(' + arg + ')']
+            self.file_object.writelines("%s\n" % l for l in emit_list)
+            return 5
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D", "@5", 'D=A', '@TEMP', 'M=D']
