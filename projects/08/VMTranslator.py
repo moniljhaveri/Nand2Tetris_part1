@@ -60,7 +60,7 @@ class VMParse:
 
     def arg2(self):
         command_t = self.commandType()
-        if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL', 'C_LABEL']:
+        if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL', 'C_LABEL', 'C_IF']:
             return list(self.command_ind[self.ind].values())[0][1]
         return
 
