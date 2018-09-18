@@ -85,13 +85,16 @@ class CodeWriter:
         pass
 
     def writeLabel(self, label):
-        pass
+        emit_list = ['(' + label + ')']
+        self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeGoto(self, label):
         pass
 
     def writeIf(self, label):
-        pass
+        emit_list = ['@SP', 'A=M', 'D=M', '@SP',
+                     'M=M-1', '@' + str(label), 'JEQ, D']
+        self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeReturn(self, label):
         pass
@@ -242,9 +245,10 @@ class CodeWriter:
             self.popStack()
             return -1
         elif command == 'C_LABEL':
-            emit_list = ['(' + arg + ')']
-            self.file_object.writelines("%s\n" % l for l in emit_list)
+            self.writeLabel(arg)
             return 5
+        elif command == 'C_IF':
+            self.writeIf(arg)
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D", "@5", 'D=A', '@TEMP', 'M=D']
