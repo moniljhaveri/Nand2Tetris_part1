@@ -92,8 +92,8 @@ class CodeWriter:
         pass
 
     def writeIf(self, label):
-        emit_list = ['@SP', 'A=M', 'D=M', '@SP',
-                     'M=M-1', '@' + str(label), 'D; JEQ']
+        emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M',
+                      '@' + str(label), 'D; JNE']
         self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeReturn(self, label):
