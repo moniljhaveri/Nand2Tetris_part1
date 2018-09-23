@@ -60,7 +60,7 @@ class VMParse:
 
     def arg2(self):
         command_t = self.commandType()
-        if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL', 'C_LABEL', 'C_IF']:
+        if command_t in ['C_PUSH', 'C_POP', 'C_FUNCTION', 'C_CALL', 'C_LABEL', 'C_IF', 'C_GOTO']:
             return list(self.command_ind[self.ind].values())[0][1]
         return
 
@@ -89,7 +89,8 @@ class CodeWriter:
         self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeGoto(self, label):
-        pass
+        emit_list = ['@' + str(label), '0; JMP']
+        self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeIf(self, label):
         emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M',
@@ -249,6 +250,8 @@ class CodeWriter:
             return 5
         elif command == 'C_IF':
             self.writeIf(arg)
+        elif command == 'C_GOTO':
+            self.writeGoto(arg)
 
     def setStack(self):
         init_list = ["@256", "D=A", "@0", "M=D", "@5", 'D=A', '@TEMP', 'M=D']
