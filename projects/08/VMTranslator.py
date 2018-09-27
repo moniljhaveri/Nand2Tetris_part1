@@ -78,6 +78,7 @@ class CodeWriter:
         self.st_ptr = 256
         self.label_num = 0
         self.setStack()
+        self.return_add = 0
         self.location = {'local': 'LCL', 'argument': 'ARG',
                          'this': 'THIS', 'that': 'THAT', 'temp': 'TEMP'}
 
@@ -94,8 +95,28 @@ class CodeWriter:
 
     def writeIf(self, label):
         emit_list = ['@SP', 'M=M-1', 'A=M', 'D=M',
-                      '@' + str(label), 'D; JNE']
+                     '@' + str(label), 'D; JNE']
         self.file_object.writelines("%s\n" % l for l in emit_list)
+
+    def writeCall(self, functionName, numArgs):
+        returnLabel = "ret_lab$" + str(self.label_num)
+        self.label_num += 1
+        emit_list = ["@" + returnLabel, "@LCL", "D=A", "@SP", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        self.incStack()
+        emit_list = ["@ARG", "D=A", "@SP", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        self.incStack()
+        emit_list = ["@THIS", "D=A", "@SP", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        self.incStack()
+        emit_list = ["@THAT", "D=A", "@SP", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        self.incStack()
+        emit_list = ["@SP", "D=A", "@" + str(numArgs), "D=D-A", "@5", "D=D-A", "@ARG", "M=D",
+                     "@SP", "D=A", "@LCL", "M=D", "@" + functionName, "0;JMP", "(" + returnLabel + ")"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        self.label_num += 1
 
     def writeReturn(self, label):
         pass
