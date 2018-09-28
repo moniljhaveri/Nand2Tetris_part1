@@ -122,7 +122,10 @@ class CodeWriter:
         pass
 
     def writeFunction(self, label, numLocals):
-        pass
+        emit_list = ["(" + label + ")"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        for i in range(numLocals):
+            self.WritePushPop('C_PUSH', 'constant', 0)
 
     def setFileName(self, file_name):
         self.file_name = file_name
