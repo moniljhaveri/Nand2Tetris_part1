@@ -119,7 +119,8 @@ class CodeWriter:
         self.label_num += 1
 
     def writeReturn(self, label):
-        pass
+        emit_list = ["@LCL", "D=M", "D=D-5", "@R14", "M=D", "@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1", "@ARG", "A=M", "M=D", "@ARG", "D=A", "@SP", "M=D+1", "@LCL", "D=M", "D=D-1", "A=D", "D=M". "@THAT", "M=D", "@LCL", "D=M", "D=D-2", "A=D", "D=M", "@THIS", "M=D", "@LCL", "D=M", "D=D-3", "A=D", "D=M", "@ARG", "M=D", "@LCL", "D=M", "D=D-4", "A=D", "D=M", "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeFunction(self, label, numLocals):
         emit_list = ["(" + label + ")"]
