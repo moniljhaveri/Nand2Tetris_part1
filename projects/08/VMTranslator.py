@@ -77,7 +77,7 @@ class CodeWriter:
         self.file_object = open(file_name, "w")
         self.st_ptr = 256
         self.label_num = 0
-        #self.setStack()
+        # self.setStack()
         self.return_add = 0
         self.location = {'local': 'LCL', 'argument': 'ARG',
                          'this': 'THIS', 'that': 'THAT', 'temp': 'TEMP'}
@@ -119,7 +119,8 @@ class CodeWriter:
         self.label_num += 1
 
     def writeReturn(self, label):
-        emit_list = ["@LCL", "D=M", "D=D-5", "@R14"] 
+        self.emit_comment(label, label, -1)
+        emit_list = ["@LCL", "D=M", "D=D-5", "@R14"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["M=D", "@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
@@ -129,9 +130,10 @@ class CodeWriter:
         self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["@LCL", "D=M", "D=D-2", "A=D", "D=M", "@THIS", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list =[ "@LCL", "D=M", "D=D-3", "A=D", "D=M", "@ARG", "M=D"]
+        emit_list = ["@LCL", "D=M", "D=D-3", "A=D", "D=M", "@ARG", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        ["@LCL", "D=M", "D=D-4", "A=D", "D=M", "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
+        ["@LCL", "D=M", "D=D-4", "A=D", "D=M",
+            "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeFunction(self, label, numLocals):
@@ -374,6 +376,12 @@ def run(fileName):
             print(command_type, arg1, arg2, arg3)
             code_writer.emit_comment(arg1, arg2, arg3)
             code_writer.writeFunction(arg1, arg3)
+        elif command_type == 'C_RETURN':
+            arg3 = vm_obj.arg3()
+            arg2 = vm_obj.arg2()
+            arg1 = vm_obj.arg1()
+            print(command_type, arg1, arg2, arg3)
+            code_writer.writeReturn(arg1)
         else:
             arg3 = vm_obj.arg3()
             arg2 = vm_obj.arg2()
