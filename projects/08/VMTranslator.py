@@ -83,7 +83,12 @@ class CodeWriter:
                          'this': 'THIS', 'that': 'THAT', 'temp': 'TEMP'}
 
     def writeInit(self):
-        pass
+        emit_list = ["@256", "D=A", "@SP", "M=D", "@1", "D=A", "@LCL", "M=-D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = ["@2", "D=A", "@ARG", "M=-D", "@3", "D=A", "@THIS", "M=-D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = ["@4", "D=A", "@THAT", "M=-D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeLabel(self, label):
         emit_list = ['(' + label + ')']
@@ -358,7 +363,7 @@ def test_answer():
     assert code_writer.file_object.name == 'testASM.asm'
 
 
-def run(fileName):
+def run(fileName, flag=False):
     # vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
     # code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
     # vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
@@ -366,6 +371,8 @@ def run(fileName):
     fileAsm = fileName.split('.')[0] + '.asm'
     vm_obj = VMParse(fileName)
     code_writer = CodeWriter(fileAsm)
+    if flag:
+        code_writer.writeInit()
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
         command_type = vm_obj.commandType()
@@ -402,7 +409,7 @@ if os.path.isdir(file):
     vm_files = [file + i for i in os.listdir(file) if '.vm' in i]
     print(vm_files)
     for i in vm_files:
-        run(i)
+        run(i, True)
 else:
     run(file)
 print("Run complete")
