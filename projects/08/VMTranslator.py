@@ -363,15 +363,19 @@ def test_answer():
     assert code_writer.file_object.name == 'testASM.asm'
 
 
-def run(fileName, flag=False):
+def run(fileName, flag=False, newFileName=""):
     # vm_obj = VMParse("./StackArithmetic/StackTest/StackTest.vm")
     # code_writer = CodeWriter('./StackArithmetic/StackTest/StackTest.asm')
     # vm_obj = VMParse("./MemoryAccess/BasicTest/BasicTest.vm")
     # code_writer = CodeWriter('MemoryAccess/BasicTest/BasicTest.asm')
     fileAsm = fileName.split('.')[0] + '.asm'
+    newFileASM = newFileName + \
+        newFileName.split("/")[len(newFileName.split("/")) - 2] + ".asm"
     vm_obj = VMParse(fileName)
     code_writer = CodeWriter(fileAsm)
     if flag:
+        print('monil', newFileASM)
+        code_writer.setFileName(newFileASM)
         code_writer.writeInit()
     while(vm_obj.hasMoreCommands()):
         vm_obj.advance()
@@ -404,12 +408,11 @@ def run(fileName, flag=False):
 
 
 file = sys.argv[1]
-print(file)
 if os.path.isdir(file):
     vm_files = [file + i for i in os.listdir(file) if '.vm' in i]
     print(vm_files)
     for i in vm_files:
-        run(i, True)
+        run(i, True, file)
 else:
     run(file)
 print("Run complete")
