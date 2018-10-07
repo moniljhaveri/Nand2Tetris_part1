@@ -120,22 +120,43 @@ class CodeWriter:
 
     def writeReturn(self, label):
         self.emit_comment(label, label, -1)
-        emit_list = ["@LCL", "D=M", "@5", "D=D-A", "@R14"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["M=D", "@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@ARG", "A=M", "M=D", "@ARG", "D=A", "@SP", "M=D+1"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@LCL", "D=M", "D=D-1", "A=D", "D=M", "@THAT", "M=D"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@LCL", "D=M", "@2",
-                     "D=D-A", "A=D", "D=M", "@THIS", "M=D"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@LCL", "D=M", "@3", "D=D-A", "A=D", "D=M", "@ARG", "M=D"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        ["@LCL", "D=M", "@4" "D=D-A", "A=D", "D=M",
-            "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
+        #emit_list = ["@LCL", "D=M", "@5", "D=D-A", "@R14"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        #emit_list = ["M=D", "@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        #emit_list = ["@ARG", "A=M", "M=D", "@ARG", "D=A", "@SP", "M=D+1"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        #emit_list = ["@LCL", "D=M", "D=D-1", "A=D", "D=M", "@THAT", "M=D"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        #emit_list = ["@LCL", "D=M", "@2",
+        #             "D=D-A", "A=D", "D=M", "@THIS", "M=D"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        #emit_list = ["@LCL", "D=M", "@3", "D=D-A", "A=D", "D=M", "@ARG", "M=D"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        #["@LCL", "D=M", "@4" "D=D-A", "A=D", "D=M",
+        #    "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        Frame = ["@LCL", "D=M", "@R13", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in Frame)
+        Ret = ["@5", "D=D-A", "A=D","D=M", "@R14", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in Ret)
+        s_Arg = ["@SP", "M=M-1", "A=M", "D=M", "@SP", "M=M-1", "@ARG", "A=M", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in s_Arg)
+        SP = ["@ARG", "D=M", "D=D+1", "@SP", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in SP)
+        THAT = ["@R13", "D=M", "@1", "D=D-A", "A=D", "D=M", "@THAT", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in THAT)
+        THIS = ["@R13", "D=M", "@2", "D=D-A", "A=D", "D=M", "@THIS", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in THIS)
+        ARG = ["@R13", "D=M", "@3", "D=D-A", "A=D", "D=M", "@ARG", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in ARG)
+        LCL = ["@R13", "D=M", "@4", "D=D-A", "A=D", "D=M", "@LCL", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in LCL)
+        GOTO = ["@R14", "A=M", "0; JMP"]
+        self.file_object.writelines("%s\n" % l for l in GOTO)
+
+
+
 
     def writeFunction(self, label, numLocals):
         emit_list = ["(" + label + ")"]
