@@ -120,27 +120,12 @@ class CodeWriter:
 
     def writeReturn(self, label):
         self.emit_comment(label, label, -1)
-        #emit_list = ["@LCL", "D=M", "@5", "D=D-A", "@R14"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
-        #emit_list = ["M=D", "@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
-        #emit_list = ["@ARG", "A=M", "M=D", "@ARG", "D=A", "@SP", "M=D+1"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
-        #emit_list = ["@LCL", "D=M", "D=D-1", "A=D", "D=M", "@THAT", "M=D"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
-        #emit_list = ["@LCL", "D=M", "@2",
-        #             "D=D-A", "A=D", "D=M", "@THIS", "M=D"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
-        #emit_list = ["@LCL", "D=M", "@3", "D=D-A", "A=D", "D=M", "@ARG", "M=D"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
-        #["@LCL", "D=M", "@4" "D=D-A", "A=D", "D=M",
-        #    "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
-        #self.file_object.writelines("%s\n" % l for l in emit_list)
         Frame = ["@LCL", "D=M", "@R13", "M=D"]
         self.file_object.writelines("%s\n" % l for l in Frame)
-        Ret = ["@5", "D=D-A", "A=D","D=M", "@R14", "M=D"]
+        Ret = ["@5", "D=D-A", "A=D", "D=M", "@R14", "M=D"]
         self.file_object.writelines("%s\n" % l for l in Ret)
-        s_Arg = ["@SP", "M=M-1", "A=M", "D=M", "@SP", "M=M-1", "@ARG", "A=M", "M=D"]
+        s_Arg = ["@SP", "M=M-1", "A=M", "D=M",
+                 "@SP", "M=M-1", "@ARG", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in s_Arg)
         SP = ["@ARG", "D=M", "D=D+1", "@SP", "M=D"]
         self.file_object.writelines("%s\n" % l for l in SP)
@@ -155,10 +140,8 @@ class CodeWriter:
         GOTO = ["@R14", "A=M", "0; JMP"]
         self.file_object.writelines("%s\n" % l for l in GOTO)
 
-
-
-
     def writeFunction(self, label, numLocals):
+        self.emit_comment(label, label, -1)
         emit_list = ["(" + label + ")"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         for i in range(numLocals):
@@ -397,7 +380,7 @@ def run(fileName):
             arg3 = vm_obj.arg3()
             print(command_type, arg1, arg2, arg3)
             code_writer.emit_comment(arg1, arg2, arg3)
-            code_writer.writeFunction(arg1, arg3)
+            code_writer.writeFunction(arg2, arg3)
         elif command_type == 'C_RETURN':
             arg3 = vm_obj.arg3()
             arg2 = vm_obj.arg2()
