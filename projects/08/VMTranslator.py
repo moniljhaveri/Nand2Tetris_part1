@@ -120,7 +120,7 @@ class CodeWriter:
 
     def writeReturn(self, label):
         self.emit_comment(label, label, -1)
-        emit_list = ["@LCL", "D=M", "D=D-5", "@R14"]
+        emit_list = ["@LCL", "D=M", "@5", "D=D-A", "@R14"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["M=D", "@0", "M=M-1", "A=M", "D=M", "@0", "M=M-1"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
@@ -128,11 +128,12 @@ class CodeWriter:
         self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["@LCL", "D=M", "D=D-1", "A=D", "D=M", "@THAT", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@LCL", "D=M", "D=D-2", "A=D", "D=M", "@THIS", "M=D"]
+        emit_list = ["@LCL", "D=M", "@2",
+                     "D=D-A", "A=D", "D=M", "@THIS", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@LCL", "D=M", "D=D-3", "A=D", "D=M", "@ARG", "M=D"]
+        emit_list = ["@LCL", "D=M", "@3", "D=D-A", "A=D", "D=M", "@ARG", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        ["@LCL", "D=M", "D=D-4", "A=D", "D=M",
+        ["@LCL", "D=M", "@4" "D=D-A", "A=D", "D=M",
             "@LCL", "M=D", "@R14", "A=M", "0; JMP"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
 
