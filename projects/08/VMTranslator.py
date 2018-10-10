@@ -104,9 +104,12 @@ class CodeWriter:
         self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeCall(self, functionName, numArgs):
+        self.emit_comment('C_CALL', functionName, numArgs)
         returnLabel = "ret_lab$" + str(self.label_num)
-        self.label_num += 1
-        emit_list = ["@" + returnLabel, "@LCL", "D=A", "@SP", "M=D"]
+        emit_list = ["@" + returnLabel, "D=A", "@SP", "A=M", "M=D"]
+        self.incStack()
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = [ "@LCL", "D=A", "@SP", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
         emit_list = ["@ARG", "D=A", "@SP", "M=D"]
@@ -398,6 +401,12 @@ def run(fileName, flag=False, newFileName=""):
             arg1 = vm_obj.arg1()
             print(command_type, arg1, arg2, arg3)
             code_writer.writeReturn(arg1)
+        elif command_type == 'C_CALL':
+            arg3 = vm_obj.arg3()
+            arg2 = vm_obj.arg2()
+            arg1 = vm_obj.arg1()
+            print(command_type, arg1, arg2, arg3)
+            code_writer.writeCall(arg2, arg3)
         else:
             arg3 = vm_obj.arg3()
             arg2 = vm_obj.arg2()
