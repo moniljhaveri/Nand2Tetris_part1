@@ -107,18 +107,19 @@ class CodeWriter:
         self.emit_comment('C_CALL', functionName, numArgs)
         returnLabel = "ret_lab$" + str(self.label_num)
         emit_list = ["@" + returnLabel, "D=A", "@SP", "A=M", "M=D"]
-        self.incStack()
-        self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = [ "@LCL", "D=A", "@SP", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@ARG", "D=A", "@SP", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = [ "@LCL", "D=A", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@THIS", "D=A", "@SP", "M=D"]
+        emit_list = ["@ARG", "D=A", "@SP","A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@THAT", "D=A", "@SP", "M=D"]
+        emit_list = ["@THIS", "D=A", "@SP","A=M", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        self.incStack()
+        emit_list = ["@THAT", "D=A", "@SP","A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
         emit_list = ["@SP", "D=A", "@" + str(numArgs), "D=D-A", "@5", "D=D-A", "@ARG", "M=D",
