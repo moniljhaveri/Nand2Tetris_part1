@@ -83,11 +83,11 @@ class CodeWriter:
                          'this': 'THIS', 'that': 'THAT', 'temp': 'TEMP'}
 
     def writeInit(self):
-        emit_list = ["@256", "D=A", "@SP", "M=D", "@1", "D=A", "@LCL", "M=-D"]
+        emit_list = ["@256", "D=A", "@SP", "M=D", "@0", "D=A", "@LCL", "M=-D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@2", "D=A", "@ARG", "M=-D", "@3", "D=A", "@THIS", "M=-D"]
+        emit_list = ["@0", "D=A", "@ARG", "M=-D", "@0", "D=A", "@THIS", "M=-D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@4", "D=A", "@THAT", "M=-D"]
+        emit_list = ["@0", "D=A", "@THAT", "M=-D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeLabel(self, label):
@@ -122,8 +122,13 @@ class CodeWriter:
         emit_list = ["@THAT", "D=A", "@SP","A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@SP", "D=A", "@" + str(numArgs), "D=D-A", "@5", "D=D-A", "@ARG", "M=D",
-                     "@SP", "D=A", "@LCL", "M=D", "@" + functionName, "0;JMP", "(" + returnLabel + ")"]
+        #emit_list = ["@SP", "D=A", "@" + str(numArgs), "D=D-A", "@5", "D=D-A", "@ARG", "M=D",
+        #             "@SP", "D=A", "@LCL", "M=D", "@" + functionName, "0;JMP", "(" + returnLabel + ")"]
+        emit_list = ["@SP", "D=M", "@5", "D=D-A", "@"+str(numArgs), "D=D-A"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = ["@SP", "D=M", "@LCL", "M=D"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = ["@"+functionName, "0;JMP", "(" + returnLabel + ")" ]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.label_num += 1
 
