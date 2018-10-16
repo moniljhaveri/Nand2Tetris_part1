@@ -84,11 +84,13 @@ class CodeWriter:
 
     def writeInit(self):
         emit_list = ["@256", "D=A", "@SP", "M=D", "@0", "D=A", "@LCL", "M=-D"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["@0", "D=A", "@ARG", "M=-D", "@0", "D=A", "@THIS", "M=-D"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["@0", "D=A", "@THAT", "M=-D"]
-        self.file_object.writelines("%s\n" % l for l in emit_list)
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = ["@256", "D=A", "@SP", "M=D"]
+        #self.file_object.writelines("%s\n" % l for l in emit_list)
 
     def writeLabel(self, label):
         emit_list = ['(' + label + ')']
@@ -109,7 +111,6 @@ class CodeWriter:
         emit_list = ["@" + returnLabel, "D=A", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = [ "@LCL", "D=A", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
