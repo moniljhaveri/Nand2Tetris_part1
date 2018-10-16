@@ -111,25 +111,25 @@ class CodeWriter:
         emit_list = ["@" + returnLabel, "D=A", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = [ "@LCL", "D=A", "@SP", "A=M", "M=D"]
+        emit_list = ["@LCL", "D=A", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@ARG", "D=A", "@SP","A=M", "M=D"]
+        emit_list = ["@ARG", "D=M", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@THIS", "D=A", "@SP","A=M", "M=D"]
+        emit_list = ["@THIS", "D=M", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@THAT", "D=A", "@SP","A=M", "M=D"]
+        emit_list = ["@THAT", "D=M", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        #emit_list = ["@SP", "D=A", "@" + str(numArgs), "D=D-A", "@5", "D=D-A", "@ARG", "M=D",
-        #             "@SP", "D=A", "@LCL", "M=D", "@" + functionName, "0;JMP", "(" + returnLabel + ")"]
-        emit_list = ["@SP", "D=M", "@5", "D=D-A", "@"+str(numArgs), "D=D-A"]
+        emit_list = ["@SP", "D=M", "@5", "D=D-A", "@" + str(numArgs), "D=D-A"]
+        self.file_object.writelines("%s\n" % l for l in emit_list)
+        emit_list = ["@ARG", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         emit_list = ["@SP", "D=M", "@LCL", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
-        emit_list = ["@"+functionName, "0;JMP", "(" + returnLabel + ")" ]
+        emit_list = ["@" + functionName, "0;JMP", "(" + returnLabel + ")"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.label_num += 1
 
