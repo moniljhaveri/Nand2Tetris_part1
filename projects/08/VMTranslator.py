@@ -111,7 +111,7 @@ class CodeWriter:
         emit_list = ["@" + returnLabel, "D=A", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
-        emit_list = ["@LCL", "D=A", "@SP", "A=M", "M=D"]
+        emit_list = ["@LCL", "D=M", "@SP", "A=M", "M=D"]
         self.file_object.writelines("%s\n" % l for l in emit_list)
         self.incStack()
         emit_list = ["@ARG", "D=M", "@SP", "A=M", "M=D"]
@@ -137,7 +137,8 @@ class CodeWriter:
         self.emit_comment(label, label, -1)
         Frame = ["@LCL", "D=M", "@R13", "M=D"]
         self.file_object.writelines("%s\n" % l for l in Frame)
-        Ret = ["@5", "D=D-A", "A=D", "D=M", "@R14", "M=D"]
+        #Ret = ["@5", "D=D-A", "A=D", "D=M", "@R14", "M=D"]
+        Ret = ["@R13", "D=M", "@5", "A=D-A", "D=M", "@R14", "M=D"]
         self.file_object.writelines("%s\n" % l for l in Ret)
         s_Arg = ["@SP", "M=M-1", "A=M", "D=M",
                  "@SP", "M=M-1", "@ARG", "A=M", "M=D"]
